@@ -1,2 +1,5 @@
 # BambuSharp
-A .NET API for bambu Labs printers
+
+![](./Docs/bambu-sharp-logo.png)
+
+An open source .NET API for Bambu Labs printers.

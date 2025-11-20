@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/doc/" />
+  <Folder Name="/doc/">
+    <File Path="../README.md" />
+  </Folder>
   <Project Path="BambuSharp.Tests/BambuSharp.Tests.csproj" Id="e38a8c19-7b4d-4b48-961b-e36e321866fe" />
   <Project Path="BambuSharp/BambuSharp.csproj" Id="a762bb75-7b3d-4840-9d87-090cf4483028" />
 </Solution>
