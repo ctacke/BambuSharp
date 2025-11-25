@@ -1,12 +1,28 @@
+using Meadow.Units;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
 namespace BambuSharp;
 
 /// <summary>
 /// Represents a connection to a Bambu Lab printer on the local network via MQTT.
 /// </summary>
-public class LocalPrinter : IDisposable
+public class LocalPrinter : IDisposable, INotifyPropertyChanged
 {
     private readonly PrinterMqttCommsManager _commsManager;
     private Report? _lastReport;
+
+    // Backing fields for properties
+    private Temperature _bedTemperature;
+    private Temperature _nozzleTemperature;
+    private int _printProgress;
+    private string _currentFileName = string.Empty;
+    private PrinterState _state = PrinterState.Idle;
+
+    /// <summary>
+    /// Occurs when a property value changes.
+    /// </summary>
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>
     /// Gets a value indicating whether the object has been disposed.
@@ -17,6 +33,51 @@ public class LocalPrinter : IDisposable
     /// Gets the IP address of the printer on the local network.
     /// </summary>
     public string IpAddress => _commsManager.IpAddress;
+
+    /// <summary>
+    /// Gets the current heated bed temperature.
+    /// </summary>
+    public Temperature BedTemperature
+    {
+        get => _bedTemperature;
+        private set => SetProperty(ref _bedTemperature, value);
+    }
+
+    /// <summary>
+    /// Gets the current nozzle (hotend) temperature.
+    /// </summary>
+    public Temperature NozzleTemperature
+    {
+        get => _nozzleTemperature;
+        private set => SetProperty(ref _nozzleTemperature, value);
+    }
+
+    /// <summary>
+    /// Gets the print completion percentage (0-100).
+    /// </summary>
+    public int PrintProgress
+    {
+        get => _printProgress;
+        private set => SetProperty(ref _printProgress, value);
+    }
+
+    /// <summary>
+    /// Gets the name of the currently loaded or printing G-code file.
+    /// </summary>
+    public string CurrentFileName
+    {
+        get => _currentFileName;
+        private set => SetProperty(ref _currentFileName, value);
+    }
+
+    /// <summary>
+    /// Gets the current operational state of the printer.
+    /// </summary>
+    public PrinterState State
+    {
+        get => _state;
+        private set => SetProperty(ref _state, value);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
@@ -45,10 +106,23 @@ public class LocalPrinter : IDisposable
     {
         _lastReport = report;
 
-        // TODO: raise events for interesting properties?  Or maybe just implement IPropertyChanged?
+        // Update properties from the report - SetProperty will raise PropertyChanged events
+        BedTemperature = report.Print.BedTemperature;
+        NozzleTemperature = report.Print.NozzleTemperature;
+        PrintProgress = report.Print.Percent;
+        CurrentFileName = report.Print.GcodeFile;
+        State = (PrinterState)report.Print.State;
     }
 
-    // TODO: this needs to get hidden/removed as we expand printer props
+    /// <summary>
+    /// Gets the last received report from the printer.
+    /// </summary>
+    /// <remarks>
+    /// This property exposes the raw Report object with settable properties.
+    /// It will be deprecated in a future version as more typed properties are added to LocalPrinter.
+    /// Consider using the strongly-typed properties like BedTemperature, NozzleTemperature, etc. instead.
+    /// </remarks>
+    [Obsolete("This property exposes the raw Report object with settable properties. It will be deprecated in a future version as more typed properties are added to LocalPrinter. Consider using the strongly-typed properties like BedTemperature, NozzleTemperature, etc. instead.", false)]
     public Report LastReport => _lastReport ?? throw new Exception("No report received from printer yet.");
 
     // TODO: should we (probably yes) expose more app-friendly entities here instead of just the raw result from the Report?
@@ -75,5 +149,34 @@ public class LocalPrinter : IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Raises the PropertyChanged event for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that changed.</param>
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    /// <summary>
+    /// Sets the property value and raises PropertyChanged if the value changed.
+    /// </summary>
+    /// <typeparam name="T">The type of the property.</typeparam>
+    /// <param name="field">Reference to the backing field.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="propertyName">The name of the property (automatically provided).</param>
+    /// <returns>True if the value changed; otherwise, false.</returns>
+    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value))
+        {
+            return false;
+        }
+
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }
