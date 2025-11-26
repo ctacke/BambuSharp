@@ -10,7 +10,7 @@ namespace BambuSharp;
 /// This class provides information about external tools attached to the printer,
 /// such as engravers, cameras, or other auxiliary devices, including their type, mounting status, and calibration.
 /// </remarks>
-public class ExtTool
+internal class ExternalToolInternal
 {
     /// <summary>
     /// Gets or sets the calibration status of the external tool.

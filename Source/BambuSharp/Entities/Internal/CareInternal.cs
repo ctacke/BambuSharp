@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Represents maintenance and care information.
 /// </summary>
-public class Care
+internal class CareInternal
 {
     /// <summary>
     /// Gets or sets the identifier for the maintenance item.

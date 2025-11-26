@@ -15,6 +15,7 @@ public class PrinterStatusView : FrameView
     private readonly List<StatusItem> _rootItems = new();
     private StatusItem? _amsRootItem;
     private StatusItem? _extruderRootItem;
+    private StatusItem? _nozzleRootItem;
     private bool _treeInitialized = false;
 
     public PrinterStatusView()
@@ -159,6 +160,15 @@ public class PrinterStatusView : FrameView
         _extruderRootItem.Children.Add(new StatusItem("Filament Temp: "));
         _extruderRootItem.Children.Add(new StatusItem("Status: "));
 
+        // Create Nozzle root item
+        _nozzleRootItem = new StatusItem("Nozzle");
+        _rootItems.Add(_nozzleRootItem);
+
+        // Add nozzle details as children
+        _nozzleRootItem.Children.Add(new StatusItem("Diameter: "));
+        _nozzleRootItem.Children.Add(new StatusItem("Type: "));
+        _nozzleRootItem.Children.Add(new StatusItem("Wear: "));
+
         // Create AMS root item
         _amsRootItem = new StatusItem("AMS Units");
         _rootItems.Add(_amsRootItem);
@@ -219,8 +229,8 @@ public class PrinterStatusView : FrameView
             _rootItems[idx++].Text = "Remaining Time: N/A";
         }
 
-        // Skip extruder root item in main list (it's handled separately below)
-        idx++;
+        // Skip extruder and nozzle root items in main list (they're handled separately below)
+        idx += 2;
 
         // Update Extruder data
         if (_extruderRootItem != null)
@@ -248,6 +258,34 @@ public class PrinterStatusView : FrameView
                     _extruderRootItem.Children[1].Text = "Target Temp: N/A";
                     _extruderRootItem.Children[2].Text = "Filament Temp: N/A";
                     _extruderRootItem.Children[3].Text = "Status: N/A";
+                }
+            }
+        }
+
+        // Update Nozzle data
+        if (_nozzleRootItem != null)
+        {
+            if (_printer.Nozzle != null)
+            {
+                _nozzleRootItem.Text = $"Nozzle (ID: {_printer.Nozzle.Id})";
+
+                // Update nozzle details
+                if (_nozzleRootItem.Children.Count >= 3)
+                {
+                    _nozzleRootItem.Children[0].Text = $"Diameter: {_printer.Nozzle.Diameter}mm";
+                    _nozzleRootItem.Children[1].Text = $"Type: {_printer.Nozzle.Type}";
+                    _nozzleRootItem.Children[2].Text = $"Wear: {_printer.Nozzle.WearPercent}%";
+                }
+            }
+            else
+            {
+                _nozzleRootItem.Text = "Nozzle: Not detected";
+                // Clear children if no nozzle data
+                if (_nozzleRootItem.Children.Count >= 3)
+                {
+                    _nozzleRootItem.Children[0].Text = "Diameter: N/A";
+                    _nozzleRootItem.Children[1].Text = "Type: N/A";
+                    _nozzleRootItem.Children[2].Text = "Wear: N/A";
                 }
             }
         }

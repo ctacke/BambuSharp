@@ -1,9 +1,9 @@
 namespace BambuSharp;
 
 /// <summary>
-/// Extension methods for the <see cref="Report"/> class to provide strongly-typed enum access.
+/// Extension methods for the <see cref="ReportInternal"/> class to provide strongly-typed enum access.
 /// </summary>
-public static class ReportExtensions
+internal static class ReportExtensions
 {
     /// <summary>
     /// Gets the current G-code state as a strongly-typed enum.
@@ -73,7 +73,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="hms">The HMS error object.</param>
     /// <returns>The <see cref="HmsSeverity"/> enum value, or null if not recognized.</returns>
-    public static HmsSeverity? GetSeverity(this Hms hms)
+    public static HmsSeverity? GetSeverity(this HealthManagementSystemInternal hms)
     {
         // HMS severity is encoded in the code
         // The exact bit pattern for extracting severity may need adjustment based on actual data
@@ -86,7 +86,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="hms">The HMS error object.</param>
     /// <returns>The <see cref="HmsModule"/> enum value, or null if not recognized.</returns>
-    public static HmsModule? GetModule(this Hms hms)
+    public static HmsModule? GetModule(this HealthManagementSystemInternal hms)
     {
         // HMS module is encoded in the code
         // The exact bit pattern for extracting module may need adjustment based on actual data

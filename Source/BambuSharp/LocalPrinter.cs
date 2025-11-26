@@ -10,7 +10,7 @@ namespace BambuSharp;
 public class LocalPrinter : IDisposable, INotifyPropertyChanged
 {
     private readonly PrinterMqttCommsManager _commsManager;
-    private Report? _lastReport;
+    private ReportInternal? _lastReport;
 
     // Backing fields for properties
     private Temperature _bedTemperature;
@@ -23,6 +23,7 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     private int _totalLayers;
     private int _remainingMinutes;
     private Extruder? _extruder;
+    private Nozzle? _nozzle;
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -132,6 +133,16 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets the primary nozzle information.
+    /// Returns null if no nozzle data is available.
+    /// </summary>
+    public Nozzle? Nozzle
+    {
+        get => _nozzle;
+        private set => SetProperty(ref _nozzle, value);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
     /// </summary>
     /// <param name="ipAddress">The IP address of the printer on the local network.</param>
@@ -154,7 +165,7 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         return _commsManager.Disconnect();
     }
 
-    private void OnPrinterReportReceived(object? sender, Report report)
+    private void OnPrinterReportReceived(object? sender, ReportInternal report)
     {
         _lastReport = report;
 
@@ -182,6 +193,17 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         else
         {
             Extruder = null;
+        }
+
+        // Update nozzle - use first nozzle (index 0) as primary
+        var nozzleInfo = report.Print.Device?.Nozzle?.Info?.FirstOrDefault();
+        if (nozzleInfo != null)
+        {
+            Nozzle = new Nozzle(nozzleInfo);
+        }
+        else
+        {
+            Nozzle = null;
         }
     }
 

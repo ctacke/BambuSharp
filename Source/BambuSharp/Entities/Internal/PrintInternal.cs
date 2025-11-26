@@ -12,7 +12,7 @@ internal class PrintInternal
     /// Gets or sets the 3D printer status information.
     /// </summary>
     [JsonPropertyName("3D")]
-    public PrintLayerInfo LayerInfo { get; set; } = new();
+    public PrintLayerInfoInternal LayerInfo { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the automatic material system (AMS) information.
@@ -133,7 +133,7 @@ internal class PrintInternal
     /// Gets or sets the device information.
     /// </summary>
     [JsonPropertyName("device")]
-    public Device Device { get; set; } = new();
+    public DeviceInternal Device { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the error message.
@@ -199,7 +199,7 @@ internal class PrintInternal
     /// Gets or sets the collection of health management system (HMS) error records.
     /// </summary>
     [JsonPropertyName("hms")]
-    public List<Hms> Hms { get; set; } = new();
+    public List<HealthManagementSystemInternal> Hms { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the home flag indicating homing status.
@@ -229,7 +229,7 @@ internal class PrintInternal
     /// Gets or sets the print job information.
     /// </summary>
     [JsonPropertyName("job")]
-    public Job Job { get; set; } = new();
+    public JobInternal Job { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the job attribute code.
@@ -537,7 +537,7 @@ internal class PrintInternal
     /// Gets or sets the firmware upgrade state information.
     /// </summary>
     [JsonPropertyName("upgrade_state")]
-    public UpgradeState UpgradeState { get; set; } = new();
+    public UpgradeStateInternal UpgradeState { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the file upload information.

@@ -7,14 +7,14 @@ namespace BambuSharp.Tests;
 /// </summary>
 public class ReportDeserializationTests
 {
-    private readonly Report _report;
+    private readonly ReportInternal _report;
 
     public ReportDeserializationTests()
     {
         // Load and deserialize the sample JSON once for all tests
         var jsonPath = Path.Combine("Inputs", "ReportSample.json");
         var json = File.ReadAllText(jsonPath);
-        _report = JsonSerializer.Deserialize<Report>(json) ?? throw new InvalidOperationException("Failed to deserialize Report");
+        _report = JsonSerializer.Deserialize<ReportInternal>(json) ?? throw new InvalidOperationException("Failed to deserialize Report");
     }
 
     [Fact]
@@ -415,7 +415,7 @@ public class ReportDeserializationTests
 
         Assert.NotNull(plate);
         Assert.Equal(1, plate.Base);
-        Assert.Equal(1, plate.Mat);
+        Assert.Equal(1, plate.Material);
         Assert.Equal("", plate.CurId);
         Assert.Equal("", plate.TarId);
     }

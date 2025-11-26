@@ -9,7 +9,7 @@ namespace BambuSharp;
 /// This class provides information about the bed's operational state and current temperature readings.
 /// The bed is essential for adhesion and proper print quality.
 /// </remarks>
-public class BedDevice
+internal class BedDeviceInternal
 {
     /// <summary>
     /// Gets or sets the temperature information for the bed.

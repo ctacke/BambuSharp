@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Root object containing the complete printer status report from a Bambu Lab printer.
 /// </summary>
-internal class Report
+internal class ReportInternal
 {
     /// <summary>
     /// Gets or sets the main print data container with all printer status information.

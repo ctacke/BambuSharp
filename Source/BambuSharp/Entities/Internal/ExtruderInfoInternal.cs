@@ -10,7 +10,7 @@ namespace BambuSharp;
 /// This class provides comprehensive information about a specific extruder's current state,
 /// including nozzle temperature readings, target temperatures, filament position, and status flags.
 /// </remarks>
-public class ExtruderInfoInternal
+internal class ExtruderInfoInternal
 {
     /// <summary>
     /// Gets or sets the backup filament information.

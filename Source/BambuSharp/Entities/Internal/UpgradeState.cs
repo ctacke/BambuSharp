@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains firmware upgrade status and version information.
 /// </summary>
-public class UpgradeState
+internal class UpgradeStateInternal
 {
     /// <summary>
     /// Gets or sets the new version number for the AHB (Bambu Lab cloud) firmware.

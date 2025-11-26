@@ -9,7 +9,7 @@ namespace BambuSharp;
 /// This class provides information about the laser-based camera sensor used for optical detection
 /// and monitoring during print operations.
 /// </remarks>
-public class LaserCam
+internal class LaserCamInternal
 {
     /// <summary>
     /// Gets or sets the condition status of the laser camera sensor.

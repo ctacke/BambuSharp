@@ -10,7 +10,7 @@ namespace BambuSharp;
 /// This class provides a simple temperature data structure used to track thermal readings
 /// from various components in the printer such as the bed, nozzle, and heating systems.
 /// </remarks>
-public class TemperatureInfo
+internal class TemperatureInfo
 {
     /// <summary>
     /// Gets or sets the temperature reading.

@@ -9,11 +9,11 @@ namespace BambuSharp;
 /// This class contains information about the camera and related sensors used for monitoring
 /// the print job and detecting issues in real-time.
 /// </remarks>
-public class CamDevice
+internal class CamDeviceInternal
 {
     /// <summary>
     /// Gets or sets the laser camera sensor status.
     /// </summary>
     [JsonPropertyName("laser")]
-    public LaserCam Laser { get; set; } = new();
+    public LaserCamInternal Laser { get; set; } = new();
 }

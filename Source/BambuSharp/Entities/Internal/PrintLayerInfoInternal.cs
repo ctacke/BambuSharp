@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains 3D printing layer progress information.
 /// </summary>
-public class PrintLayerInfo
+internal class PrintLayerInfoInternal
 {
     /// <summary>
     /// Gets or sets the current layer number being printed.

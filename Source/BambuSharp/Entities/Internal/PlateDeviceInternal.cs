@@ -9,7 +9,7 @@ namespace BambuSharp;
 /// This class provides information about the build plate including its type, calibration status,
 /// and identifiers for tracking different plates and their calibration profiles.
 /// </remarks>
-public class PlateDevice
+internal class PlateDeviceInternal
 {
     /// <summary>
     /// Gets or sets the base plate type or configuration identifier.
@@ -33,7 +33,7 @@ public class PlateDevice
     /// Gets or sets the material type of the build plate surface.
     /// </summary>
     [JsonPropertyName("mat")]
-    public int Mat { get; set; }
+    public int Material { get; set; }
 
     /// <summary>
     /// Gets or sets the target build plate identifier for next use or switching.

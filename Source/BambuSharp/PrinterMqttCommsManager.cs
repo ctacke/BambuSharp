@@ -8,13 +8,13 @@ namespace BambuSharp;
 
 internal class PrinterMqttCommsManager : IDisposable
 {
-    public event EventHandler<Report>? ReportReceived;
+    public event EventHandler<ReportInternal>? ReportReceived;
 
     public const int DefaultConnectTimeoutSeconds = 10;
 
     private readonly IMqttClient _mqttClient;
     private readonly MqttClientOptions? _mqttOptions;
-    private TaskCompletionSource<Report>? _connectionReportTcs;
+    private TaskCompletionSource<ReportInternal>? _connectionReportTcs;
 
     public bool IsDisposed { get; private set; }
     public string IpAddress { get; }
@@ -50,7 +50,7 @@ internal class PrinterMqttCommsManager : IDisposable
         }
 
         // Create a TaskCompletionSource to wait for the first report
-        _connectionReportTcs = new TaskCompletionSource<Report>();
+        _connectionReportTcs = new TaskCompletionSource<ReportInternal>();
 
         Debug.WriteLine($"Connecting to MQTT broker at {IpAddress}:8883...");
         var connectResult = await _mqttClient.ConnectAsync(_mqttOptions, cancellationToken ?? CancellationToken.None);
@@ -109,7 +109,7 @@ internal class PrinterMqttCommsManager : IDisposable
 
         try
         {
-            var report = JsonSerializer.Deserialize<Report>(payload);
+            var report = JsonSerializer.Deserialize<ReportInternal>(payload);
 
             // If this is the first report and we're waiting for it, complete the task
             if (_connectionReportTcs != null && !_connectionReportTcs.Task.IsCompleted)

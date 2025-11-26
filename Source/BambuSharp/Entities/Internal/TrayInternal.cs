@@ -6,7 +6,7 @@ namespace BambuSharp;
 /// <summary>
 /// Internal entity for JSON deserialization. Represents a filament tray/spool with material properties and status information.
 /// </summary>
-public class TrayInternal
+internal class TrayInternal
 {
     /// <summary>
     /// Gets or sets the heated bed temperature in degrees Celsius for this filament material.

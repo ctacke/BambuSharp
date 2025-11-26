@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Represents a single stage in a multi-stage print job with tool and material information.
 /// </summary>
-public class Stage
+internal class StageInternal
 {
     /// <summary>
     /// Gets or sets a value indicating whether clock-in is enabled for this stage.

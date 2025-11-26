@@ -6,7 +6,7 @@ namespace BambuSharp;
 /// <summary>
 /// Internal entity for JSON deserialization. Represents a single AMS unit with its humidity, temperature, and filament tray information.
 /// </summary>
-public class AmsInternal
+internal class AmsInternal
 {
     /// <summary>
     /// Gets or sets the drying time for the filament in the AMS unit (in hours or minutes depending on context).

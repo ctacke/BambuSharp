@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Internal entity for JSON deserialization. Contains configuration and status information for the Automatic Material System (AMS) that manages multiple filament spools.
 /// </summary>
-public class AmsSystemInternal
+internal class AmsSystemInternal
 {
     /// <summary>
     /// Gets or sets the list of individual AMS units in the system.

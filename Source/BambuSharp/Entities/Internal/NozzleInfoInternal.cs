@@ -9,7 +9,7 @@ namespace BambuSharp;
 /// This class provides detailed specifications and status information for a specific nozzle,
 /// including its size, material compatibility, remaining lifespan, and operational parameters.
 /// </remarks>
-public class NozzleInfo
+internal class NozzleInfoInternal
 {
     /// <summary>
     /// Gets or sets the nozzle diameter in millimeters.

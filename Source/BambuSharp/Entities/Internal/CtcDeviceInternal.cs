@@ -9,7 +9,7 @@ namespace BambuSharp;
 /// This class provides information about the core temperature control system and its operational state.
 /// The CTC system manages temperature regulation across various heating elements in the printer.
 /// </remarks>
-public class CtcDevice
+internal class CtcDeviceInternal
 {
     /// <summary>
     /// Gets or sets the temperature information for the CTC system.

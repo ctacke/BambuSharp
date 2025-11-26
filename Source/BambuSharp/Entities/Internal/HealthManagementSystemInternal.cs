@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Represents a Health Management System (HMS) error or warning code.
 /// </summary>
-public class Hms
+internal class HealthManagementSystemInternal
 {
     /// <summary>
     /// Gets or sets the attribute flags associated with the HMS code.

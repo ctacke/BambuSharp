@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Represents the currently active print job stage.
 /// </summary>
-public class CurrentStage
+internal class CurrentStageInternal
 {
     /// <summary>
     /// Gets or sets the index of the current stage.
