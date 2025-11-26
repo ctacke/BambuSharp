@@ -1,0 +1,6 @@
+# Ignore printer configuration file (contains access codes)
+printers.json
+
+# Standard .NET ignores
+bin/
+obj/
