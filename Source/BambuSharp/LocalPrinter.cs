@@ -24,6 +24,8 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     private int _remainingMinutes;
     private Extruder? _extruder;
     private Nozzle? _nozzle;
+    private IpCamera? _ipCamera;
+    private IReadOnlyList<Light> _lights = Array.Empty<Light>();
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -143,6 +145,25 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets the IP camera information.
+    /// Returns null if no camera data is available.
+    /// </summary>
+    public IpCamera? IpCamera
+    {
+        get => _ipCamera;
+        private set => SetProperty(ref _ipCamera, value);
+    }
+
+    /// <summary>
+    /// Gets the list of lights (chamber light, work light, etc.).
+    /// </summary>
+    public IReadOnlyList<Light> Lights
+    {
+        get => _lights;
+        private set => SetProperty(ref _lights, value);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
     /// </summary>
     /// <param name="ipAddress">The IP address of the printer on the local network.</param>
@@ -205,6 +226,21 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         {
             Nozzle = null;
         }
+
+        // Update IP camera
+        if (report.Print.IpCam != null)
+        {
+            IpCamera = new IpCamera(report.Print.IpCam);
+        }
+        else
+        {
+            IpCamera = null;
+        }
+
+        // Update lights - create public wrappers from internal entities
+        Lights = report.Print.LightsReport
+            .Select(light => new Light(light))
+            .ToList();
     }
 
     protected virtual void Dispose(bool disposing)

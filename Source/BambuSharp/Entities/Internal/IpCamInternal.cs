@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains IP camera configuration and recording settings.
 /// </summary>
-public class IpCam
+internal class IpCamInternal
 {
     /// <summary>
     /// Gets or sets the Agora service configuration.

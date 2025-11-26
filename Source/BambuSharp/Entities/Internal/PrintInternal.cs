@@ -103,7 +103,7 @@ internal class PrintInternal
     /// Gets or sets the collection of maintenance/care information.
     /// </summary>
     [JsonPropertyName("care")]
-    public List<Care> Care { get; set; } = new();
+    public List<CareInternal> Care { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the configuration information.
@@ -223,7 +223,7 @@ internal class PrintInternal
     /// Gets or sets the IP camera information.
     /// </summary>
     [JsonPropertyName("ipcam")]
-    public IpCam IpCam { get; set; } = new();
+    public IpCamInternal IpCam { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the print job information.
@@ -253,7 +253,7 @@ internal class PrintInternal
     /// Gets or sets the collection of light status reports.
     /// </summary>
     [JsonPropertyName("lights_report")]
-    public List<LightReport> LightsReport { get; set; } = new();
+    public List<LightReportInternal> LightsReport { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the mapping configuration list.

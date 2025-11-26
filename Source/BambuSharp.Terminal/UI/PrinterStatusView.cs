@@ -16,6 +16,8 @@ public class PrinterStatusView : FrameView
     private StatusItem? _amsRootItem;
     private StatusItem? _extruderRootItem;
     private StatusItem? _nozzleRootItem;
+    private StatusItem? _cameraRootItem;
+    private StatusItem? _lightsRootItem;
     private bool _treeInitialized = false;
 
     public PrinterStatusView()
@@ -169,6 +171,28 @@ public class PrinterStatusView : FrameView
         _nozzleRootItem.Children.Add(new StatusItem("Type: "));
         _nozzleRootItem.Children.Add(new StatusItem("Wear: "));
 
+        // Create Camera root item
+        _cameraRootItem = new StatusItem("Camera");
+        _rootItems.Add(_cameraRootItem);
+
+        // Add camera details as children
+        _cameraRootItem.Children.Add(new StatusItem("Resolution: "));
+        _cameraRootItem.Children.Add(new StatusItem("Recording: "));
+
+        // Create Lights root item
+        _lightsRootItem = new StatusItem("Lights");
+        _rootItems.Add(_lightsRootItem);
+
+        // Build lights structure based on current printer state
+        if (_printer?.Lights != null)
+        {
+            foreach (var light in _printer.Lights)
+            {
+                var lightItem = new StatusItem($"{light.Name}: {light.Mode}");
+                _lightsRootItem.Children.Add(lightItem);
+            }
+        }
+
         // Create AMS root item
         _amsRootItem = new StatusItem("AMS Units");
         _rootItems.Add(_amsRootItem);
@@ -229,8 +253,8 @@ public class PrinterStatusView : FrameView
             _rootItems[idx++].Text = "Remaining Time: N/A";
         }
 
-        // Skip extruder and nozzle root items in main list (they're handled separately below)
-        idx += 2;
+        // Skip extruder, nozzle, camera, and lights root items in main list (they're handled separately below)
+        idx += 4;
 
         // Update Extruder data
         if (_extruderRootItem != null)
@@ -287,6 +311,63 @@ public class PrinterStatusView : FrameView
                     _nozzleRootItem.Children[1].Text = "Type: N/A";
                     _nozzleRootItem.Children[2].Text = "Wear: N/A";
                 }
+            }
+        }
+
+        // Update Camera data
+        if (_cameraRootItem != null)
+        {
+            if (_printer.IpCamera != null)
+            {
+                _cameraRootItem.Text = "Camera";
+
+                // Update camera details
+                if (_cameraRootItem.Children.Count >= 2)
+                {
+                    _cameraRootItem.Children[0].Text = $"Resolution: {_printer.IpCamera.Resolution}";
+                    _cameraRootItem.Children[1].Text = $"Recording: {_printer.IpCamera.RecordingSetting}";
+                }
+            }
+            else
+            {
+                _cameraRootItem.Text = "Camera: Not detected";
+                // Clear children if no camera data
+                if (_cameraRootItem.Children.Count >= 2)
+                {
+                    _cameraRootItem.Children[0].Text = "Resolution: N/A";
+                    _cameraRootItem.Children[1].Text = "Recording: N/A";
+                }
+            }
+        }
+
+        // Update Lights data
+        if (_lightsRootItem != null)
+        {
+            if (_printer.Lights?.Count > 0)
+            {
+                _lightsRootItem.Text = $"Lights ({_printer.Lights.Count})";
+
+                // Check if lights structure changed (number of lights)
+                if (_printer.Lights.Count != _lightsRootItem.Children.Count)
+                {
+                    // Rebuild tree if structure changed
+                    _treeInitialized = false;
+                    BuildTree();
+                    return;
+                }
+
+                // Update light data
+                for (int i = 0; i < _printer.Lights.Count && i < _lightsRootItem.Children.Count; i++)
+                {
+                    var light = _printer.Lights[i];
+                    var lightItem = _lightsRootItem.Children[i];
+                    lightItem.Text = $"{light.Name}: {light.Mode}";
+                }
+            }
+            else
+            {
+                _lightsRootItem.Text = "Lights: None";
+                _lightsRootItem.Children.Clear();
             }
         }
 

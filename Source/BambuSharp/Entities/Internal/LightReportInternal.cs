@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Represents the status of a printer light (chamber light, work light, etc.).
 /// </summary>
-public class LightReport
+internal class LightReportInternal
 {
     /// <summary>
     /// Gets or sets the light mode (e.g., "on", "off", "flashing").
