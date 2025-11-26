@@ -16,7 +16,7 @@ public class MainWindow : Window
     {
         _printerManager = printerManager;
 
-        Title = "Bambu Sharp CLI (Ctrl+Q to Quit)";
+        Title = "BambuSharp Terminal (Ctrl+Q to Quit)";
 
         // Create top button bar
         var addButton = new Button("Add Printer")
@@ -35,7 +35,7 @@ public class MainWindow : Window
 
         var quitButton = new Button("Quit")
         {
-            X = Pos.AnchorEnd() - 7,  // "Quit" button width
+            X = Pos.AnchorEnd() - 9,  // "Quit" button width
             Y = 0
         };
         quitButton.Clicked += () => Application.RequestStop();
@@ -56,7 +56,7 @@ public class MainWindow : Window
             X = 1,
             Y = 3,
             Width = Dim.Fill() - 1,
-            Height = 8
+            Height = 5  // Reduced from 8 to give more space to status view
         };
         _printerListView.SelectedItemChanged += OnPrinterSelected;
         Add(_printerListView);

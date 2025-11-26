@@ -39,7 +39,7 @@ public class PrinterManager : IDisposable
     /// <summary>
     /// Loads printer configurations from the JSON file.
     /// </summary>
-    public async Task LoadConfigurationsAsync()
+    public void LoadConfigurationsAsync()
     {
         if (!File.Exists(_configFilePath))
         {
@@ -49,7 +49,7 @@ public class PrinterManager : IDisposable
 
         try
         {
-            var json = await File.ReadAllTextAsync(_configFilePath);
+            var json = File.ReadAllText(_configFilePath);
             _configuration = JsonSerializer.Deserialize<AppConfiguration>(json) ?? new AppConfiguration();
         }
         catch

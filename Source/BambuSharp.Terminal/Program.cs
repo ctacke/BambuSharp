@@ -14,7 +14,7 @@ internal class Program
         {
             // Create printer manager
             var printerManager = new PrinterManager();
-            await printerManager.LoadConfigurationsAsync();
+            printerManager.LoadConfigurationsAsync();
 
             // Create and run main window
             var mainWindow = new MainWindow(printerManager);

@@ -17,8 +17,13 @@ public class Print
     /// <summary>
     /// Gets or sets the automatic material system (AMS) information.
     /// </summary>
+    /// <remarks>
+    /// IMPORTANT: This property MUST be public for JSON deserialization to work.
+    /// System.Text.Json only deserializes public properties by default.
+    /// The type (AmsSystemInternal) is internal, which provides the encapsulation we want.
+    /// </remarks>
     [JsonPropertyName("ams")]
-    public AmsSystem Ams { get; set; } = new();
+    public AmsSystemInternal Ams { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the AMS RFID status code.
@@ -549,14 +554,22 @@ public class Print
     /// <summary>
     /// Gets or sets the collection of virtual material trays.
     /// </summary>
+    /// <remarks>
+    /// IMPORTANT: This property MUST be public for JSON deserialization to work.
+    /// System.Text.Json only deserializes public properties by default.
+    /// </remarks>
     [JsonPropertyName("vir_slot")]
-    public List<Tray> VirtualTrays { get; set; } = new();
+    public List<TrayInternal> VirtualTrays { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the current virtual tray information.
     /// </summary>
+    /// <remarks>
+    /// IMPORTANT: This property MUST be public for JSON deserialization to work.
+    /// System.Text.Json only deserializes public properties by default.
+    /// </remarks>
     [JsonPropertyName("vt_tray")]
-    public Tray CurrentVirtualTray { get; set; } = new();
+    public TrayInternal CurrentVirtualTray { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the WiFi signal strength.

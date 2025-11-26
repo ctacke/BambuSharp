@@ -3,15 +3,15 @@ using System.Text.Json.Serialization;
 namespace BambuSharp;
 
 /// <summary>
-/// Contains configuration and status information for the Automatic Material System (AMS) that manages multiple filament spools.
+/// Internal entity for JSON deserialization. Contains configuration and status information for the Automatic Material System (AMS) that manages multiple filament spools.
 /// </summary>
-public class AmsSystem
+public class AmsSystemInternal
 {
     /// <summary>
     /// Gets or sets the list of individual AMS units in the system.
     /// </summary>
     [JsonPropertyName("ams")]
-    public List<Ams> AmsList { get; set; } = new();
+    public List<AmsInternal> AmsList { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the AMS existence bits indicating which AMS slots contain active units.

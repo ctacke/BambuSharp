@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 namespace BambuSharp;
 
 /// <summary>
-/// Represents a single AMS unit with its humidity, temperature, and filament tray information.
+/// Internal entity for JSON deserialization. Represents a single AMS unit with its humidity, temperature, and filament tray information.
 /// </summary>
-public class Ams
+public class AmsInternal
 {
     /// <summary>
     /// Gets or sets the drying time for the filament in the AMS unit (in hours or minutes depending on context).
@@ -49,5 +49,5 @@ public class Ams
     /// Gets or sets the list of filament trays in this AMS unit.
     /// </summary>
     [JsonPropertyName("tray")]
-    public List<Tray> Tray { get; set; } = new();
+    public List<TrayInternal> Tray { get; set; } = new();
 }

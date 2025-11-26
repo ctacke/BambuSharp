@@ -18,6 +18,7 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     private int _printProgress;
     private string _currentFileName = string.Empty;
     private PrinterState _state = PrinterState.Idle;
+    private IReadOnlyList<Ams> _amsUnits = Array.Empty<Ams>();
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -80,6 +81,16 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets the list of AMS (Automatic Material System) units connected to the printer.
+    /// Each AMS unit contains multiple filament trays with information about material type, color, and remaining filament.
+    /// </summary>
+    public IReadOnlyList<Ams> AmsUnits
+    {
+        get => _amsUnits;
+        private set => SetProperty(ref _amsUnits, value);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
     /// </summary>
     /// <param name="ipAddress">The IP address of the printer on the local network.</param>
@@ -112,6 +123,11 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         PrintProgress = report.Print.Percent;
         CurrentFileName = report.Print.GcodeFile;
         State = (PrinterState)report.Print.State;
+
+        // Update AMS units - create public wrappers from internal entities
+        AmsUnits = report.Print.Ams.AmsList
+            .Select(ams => new Ams(ams))
+            .ToList();
     }
 
     /// <summary>
@@ -128,7 +144,6 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     // TODO: should we (probably yes) expose more app-friendly entities here instead of just the raw result from the Report?
     //       this also would hide the settability of the Report objects from the user of this class.
 
-    public AmsSystem AmsSystem => _lastReport?.Print.Ams ?? throw new Exception("No report received from printer yet.");
     public PrintLayerInfo LayerProgress => _lastReport?.Print.LayerInfo ?? throw new Exception("No report received from printer yet.");
 
     protected virtual void Dispose(bool disposing)
