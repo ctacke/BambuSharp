@@ -1,4 +1,4 @@
-namespace BambuSharp.Terminal.Configuration;
+namespace BambuSharp.UI.Configuration;
 
 /// <summary>
 /// Represents the configuration for a single Bambu Lab printer.

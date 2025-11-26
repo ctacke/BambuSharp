@@ -1,6 +1,6 @@
 using Terminal.Gui;
 
-namespace BambuSharp.Terminal.UI;
+namespace BambuSharp.UI;
 
 /// <summary>
 /// Main application window for the Bambu Sharp CLI.

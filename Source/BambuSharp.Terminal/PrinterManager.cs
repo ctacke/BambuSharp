@@ -1,7 +1,7 @@
-using BambuSharp.Terminal.Configuration;
+using BambuSharp.UI.Configuration;
 using System.Text.Json;
 
-namespace BambuSharp.Terminal;
+namespace BambuSharp.UI;
 
 /// <summary>
 /// Manages printer configurations and LocalPrinter instances.

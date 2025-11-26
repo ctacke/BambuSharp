@@ -9,13 +9,13 @@ namespace BambuSharp;
 /// This class provides comprehensive status information for each extruder unit including
 /// temperature, filament state, and operational metrics.
 /// </remarks>
-public class ExtruderDevice
+public class ExtruderDeviceInternal
 {
     /// <summary>
     /// Gets or sets the detailed status information for each extruder.
     /// </summary>
     [JsonPropertyName("info")]
-    public List<ExtruderInfo> Info { get; set; } = new();
+    public List<ExtruderInfoInternal> Info { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the overall operational state of the extruder system.

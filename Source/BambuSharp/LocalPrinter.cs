@@ -19,6 +19,10 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     private string _currentFileName = string.Empty;
     private PrinterState _state = PrinterState.Idle;
     private IReadOnlyList<Ams> _amsUnits = Array.Empty<Ams>();
+    private int _currentLayer;
+    private int _totalLayers;
+    private int _remainingMinutes;
+    private Extruder? _extruder;
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -91,6 +95,43 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets the current layer number being printed.
+    /// </summary>
+    public int CurrentLayer
+    {
+        get => _currentLayer;
+        private set => SetProperty(ref _currentLayer, value);
+    }
+
+    /// <summary>
+    /// Gets the total number of layers in the current print job.
+    /// </summary>
+    public int TotalLayers
+    {
+        get => _totalLayers;
+        private set => SetProperty(ref _totalLayers, value);
+    }
+
+    /// <summary>
+    /// Gets the estimated remaining time in minutes for the current print job.
+    /// </summary>
+    public int RemainingMinutes
+    {
+        get => _remainingMinutes;
+        private set => SetProperty(ref _remainingMinutes, value);
+    }
+
+    /// <summary>
+    /// Gets the primary extruder information.
+    /// Returns null if no extruder data is available.
+    /// </summary>
+    public Extruder? Extruder
+    {
+        get => _extruder;
+        private set => SetProperty(ref _extruder, value);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
     /// </summary>
     /// <param name="ipAddress">The IP address of the printer on the local network.</param>
@@ -123,28 +164,26 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         PrintProgress = report.Print.Percent;
         CurrentFileName = report.Print.GcodeFile;
         State = (PrinterState)report.Print.State;
+        CurrentLayer = report.Print.LayerNum;
+        TotalLayers = report.Print.TotalLayerNum;
+        RemainingMinutes = report.Print.RemainTime;
 
         // Update AMS units - create public wrappers from internal entities
         AmsUnits = report.Print.Ams.AmsList
             .Select(ams => new Ams(ams))
             .ToList();
+
+        // Update extruder - use first extruder (index 0) as primary
+        var extruderInfo = report.Print.Device?.Extruder?.Info?.FirstOrDefault();
+        if (extruderInfo != null)
+        {
+            Extruder = new Extruder(extruderInfo);
+        }
+        else
+        {
+            Extruder = null;
+        }
     }
-
-    /// <summary>
-    /// Gets the last received report from the printer.
-    /// </summary>
-    /// <remarks>
-    /// This property exposes the raw Report object with settable properties.
-    /// It will be deprecated in a future version as more typed properties are added to LocalPrinter.
-    /// Consider using the strongly-typed properties like BedTemperature, NozzleTemperature, etc. instead.
-    /// </remarks>
-    [Obsolete("This property exposes the raw Report object with settable properties. It will be deprecated in a future version as more typed properties are added to LocalPrinter. Consider using the strongly-typed properties like BedTemperature, NozzleTemperature, etc. instead.", false)]
-    public Report LastReport => _lastReport ?? throw new Exception("No report received from printer yet.");
-
-    // TODO: should we (probably yes) expose more app-friendly entities here instead of just the raw result from the Report?
-    //       this also would hide the settability of the Report objects from the user of this class.
-
-    public PrintLayerInfo LayerProgress => _lastReport?.Print.LayerInfo ?? throw new Exception("No report received from printer yet.");
 
     protected virtual void Dispose(bool disposing)
     {

@@ -47,7 +47,7 @@ public class Device
     /// Gets or sets the extruder system status and information.
     /// </summary>
     [JsonPropertyName("extruder")]
-    public ExtruderDevice Extruder { get; set; } = new();
+    public ExtruderDeviceInternal Extruder { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the cooling fan power level.

@@ -1,8 +1,8 @@
-using BambuSharp.Terminal.Configuration;
+using BambuSharp.UI.Configuration;
 using System.Net;
 using Terminal.Gui;
 
-namespace BambuSharp.Terminal.UI;
+namespace BambuSharp.UI;
 
 /// <summary>
 /// Dialog for adding a new printer configuration.

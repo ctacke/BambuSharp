@@ -10,7 +10,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="print">The print status object.</param>
     /// <returns>The <see cref="GCodeState"/> enum value.</returns>
-    public static GCodeState GetGCodeState(this Print print)
+    internal static GCodeState GetGCodeState(this PrintInternal print)
     {
         return EnumHelpers.ParseGCodeState(print.GcodeState);
     }
@@ -20,7 +20,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="print">The print status object.</param>
     /// <returns>The <see cref="PrinterState"/> enum value, or null if the state is not recognized.</returns>
-    public static PrinterState? GetPrinterState(this Print print)
+    internal static PrinterState? GetPrinterState(this PrintInternal print)
     {
         return EnumHelpers.GetPrinterState(print.State);
     }
@@ -30,7 +30,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="print">The print status object.</param>
     /// <returns>The <see cref="SpeedProfile"/> enum value, or null if the speed level is not recognized.</returns>
-    public static SpeedProfile? GetSpeedProfile(this Print print)
+    internal static SpeedProfile? GetSpeedProfile(this PrintInternal print)
     {
         return EnumHelpers.GetSpeedProfile(print.SpdLvl);
     }
@@ -40,7 +40,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="print">The print status object.</param>
     /// <returns>True if the printer is actively printing; otherwise, false.</returns>
-    public static bool IsPrinting(this Print print)
+    internal static bool IsPrinting(this PrintInternal print)
     {
         var state = print.GetGCodeState();
         return state == GCodeState.Running || state == GCodeState.Prepare;
@@ -51,7 +51,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="print">The print status object.</param>
     /// <returns>True if the printer is idle; otherwise, false.</returns>
-    public static bool IsIdle(this Print print)
+    internal static bool IsIdle(this PrintInternal print)
     {
         var state = print.GetGCodeState();
         return state == GCodeState.Idle;
@@ -62,7 +62,7 @@ public static class ReportExtensions
     /// </summary>
     /// <param name="print">The print status object.</param>
     /// <returns>True if the print has finished or failed; otherwise, false.</returns>
-    public static bool IsComplete(this Print print)
+    internal static bool IsComplete(this PrintInternal print)
     {
         var state = print.GetGCodeState();
         return state == GCodeState.Finish || state == GCodeState.Failed;

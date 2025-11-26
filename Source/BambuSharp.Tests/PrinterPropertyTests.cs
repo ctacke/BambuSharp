@@ -86,32 +86,6 @@ public class PrinterPropertyTests
         printer.Dispose();
     }
 
-    //[Fact(Skip = "This test requires access to an actual, physical printer")]
-    [Fact]
-    public async Task ConnectedPrinter_PropertiesMatchLastReport()
-    {
-        // Arrange
-        var printer = new LocalPrinter(TestPrinterIp, TestPrinterAccessCode);
-
-        // Act - Connect and wait for reports
-        await printer.Connect();
-        await Task.Delay(1000);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-        var report = printer.LastReport;
-#pragma warning restore CS0618
-
-        // Assert - Verify properties match the report values
-        Assert.Equal(report.Print.BedTemperature, printer.BedTemperature);
-        Assert.Equal(report.Print.NozzleTemperature, printer.NozzleTemperature);
-        Assert.Equal(report.Print.Percent, printer.PrintProgress);
-        Assert.Equal(report.Print.GcodeFile, printer.CurrentFileName);
-        Assert.Equal((PrinterState)report.Print.State, printer.State);
-
-        await printer.Disconnect();
-        printer.Dispose();
-    }
-
     [Fact]
     public void Printer_ImplementsINotifyPropertyChanged()
     {
@@ -129,10 +103,8 @@ public class PrinterPropertyTests
         var printer = new LocalPrinter(TestPrinterIp, TestPrinterAccessCode);
         await printer.Connect();
 
-#pragma warning disable CS0618 // Type or member is obsolete
         // just read some props to make sure they exist
-        var bedTemp = printer.LastReport.Print.BedTemperature;
-#pragma warning restore CS0618
+        var bedTemp = printer.BedTemperature;
 
         // Wait for a report to be received
     }

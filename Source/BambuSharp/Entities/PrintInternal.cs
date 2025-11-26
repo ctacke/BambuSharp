@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 namespace BambuSharp;
 
 /// <summary>
-/// Contains comprehensive printer status information including hardware state, job progress, temperatures, and system configuration.
+/// Internal entity for JSON deserialization. Contains comprehensive printer status information including hardware state, job progress, temperatures, and system configuration.
 /// </summary>
-public class Print
+internal class PrintInternal
 {
     /// <summary>
     /// Gets or sets the 3D printer status information.

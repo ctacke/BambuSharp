@@ -1,7 +1,6 @@
-﻿using BambuSharp.Terminal.UI;
-using Terminal.Gui;
+﻿using Terminal.Gui;
 
-namespace BambuSharp.Terminal;
+namespace BambuSharp.UI;
 
 internal class Program
 {

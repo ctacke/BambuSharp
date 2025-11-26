@@ -1,8 +1,9 @@
+using BambuSharp.UI.Utilities;
 using System.ComponentModel;
 using Terminal.Gui;
 using Terminal.Gui.Trees;
 
-namespace BambuSharp.Terminal.UI;
+namespace BambuSharp.UI;
 
 /// <summary>
 /// View for displaying printer status information with live updates and expandable AMS tree.
@@ -13,6 +14,7 @@ public class PrinterStatusView : FrameView
     private LocalPrinter? _printer;
     private readonly List<StatusItem> _rootItems = new();
     private StatusItem? _amsRootItem;
+    private StatusItem? _extruderRootItem;
     private bool _treeInitialized = false;
 
     public PrinterStatusView()
@@ -28,6 +30,24 @@ public class PrinterStatusView : FrameView
         };
 
         _statusTreeView.TreeBuilder = new StatusItemTreeBuilder();
+
+        // Set up color getter to apply custom colors to items
+        _statusTreeView.ColorGetter = (obj) =>
+        {
+            if (obj is StatusItem item && item.ForegroundColor.HasValue)
+            {
+                var bgColor = item.BackgroundColor ?? Color.Black;
+                var colorScheme = new ColorScheme
+                {
+                    Normal = new Terminal.Gui.Attribute(item.ForegroundColor.Value, bgColor),
+                    Focus = new Terminal.Gui.Attribute(item.ForegroundColor.Value, Color.DarkGray),
+                    HotNormal = new Terminal.Gui.Attribute(item.ForegroundColor.Value, bgColor),
+                    HotFocus = new Terminal.Gui.Attribute(item.ForegroundColor.Value, Color.DarkGray)
+                };
+                return colorScheme;
+            }
+            return null;
+        };
 
         Add(_statusTreeView);
 
@@ -94,10 +114,8 @@ public class PrinterStatusView : FrameView
 
         try
         {
-#pragma warning disable CS0618 // LastReport is obsolete
-            _ = _printer.LastReport;
-            var report = _printer.LastReport;
-#pragma warning restore CS0618
+            // Try to access a property to check if data is available
+            _ = _printer.State;
 
             if (!_treeInitialized)
             {
@@ -131,6 +149,16 @@ public class PrinterStatusView : FrameView
         _rootItems.Add(new StatusItem("Layer: "));
         _rootItems.Add(new StatusItem("Remaining Time: "));
 
+        // Create Extruder root item
+        _extruderRootItem = new StatusItem("Extruder");
+        _rootItems.Add(_extruderRootItem);
+
+        // Add extruder details as children
+        _extruderRootItem.Children.Add(new StatusItem("Current Temp: "));
+        _extruderRootItem.Children.Add(new StatusItem("Target Temp: "));
+        _extruderRootItem.Children.Add(new StatusItem("Filament Temp: "));
+        _extruderRootItem.Children.Add(new StatusItem("Status: "));
+
         // Create AMS root item
         _amsRootItem = new StatusItem("AMS Units");
         _rootItems.Add(_amsRootItem);
@@ -162,10 +190,6 @@ public class PrinterStatusView : FrameView
     {
         if (_printer == null) return;
 
-#pragma warning disable CS0618 // LastReport is obsolete
-        var report = _printer.LastReport;
-#pragma warning restore CS0618
-
         // Update basic status items
         var idx = 0;
         _rootItems[idx++].Text = $"State: {_printer.State}";
@@ -175,9 +199,9 @@ public class PrinterStatusView : FrameView
         _rootItems[idx++].Text = $"Nozzle Temp: {_printer.NozzleTemperature.Celsius:F1}°C";
 
         // Layer info
-        if (report.Print.TotalLayerNum > 0)
+        if (_printer.TotalLayers > 0)
         {
-            _rootItems[idx++].Text = $"Layer: {report.Print.LayerNum}/{report.Print.TotalLayerNum}";
+            _rootItems[idx++].Text = $"Layer: {_printer.CurrentLayer}/{_printer.TotalLayers}";
         }
         else
         {
@@ -185,14 +209,47 @@ public class PrinterStatusView : FrameView
         }
 
         // Remaining time
-        if (report.Print.RemainTime > 0)
+        if (_printer.RemainingMinutes > 0)
         {
-            var remainingTime = TimeSpan.FromMinutes(report.Print.RemainTime);
+            var remainingTime = TimeSpan.FromMinutes(_printer.RemainingMinutes);
             _rootItems[idx++].Text = $"Remaining Time: {remainingTime.Hours}h {remainingTime.Minutes}m";
         }
         else
         {
             _rootItems[idx++].Text = "Remaining Time: N/A";
+        }
+
+        // Skip extruder root item in main list (it's handled separately below)
+        idx++;
+
+        // Update Extruder data
+        if (_extruderRootItem != null)
+        {
+            if (_printer.Extruder != null)
+            {
+                _extruderRootItem.Text = $"Extruder (ID: {_printer.Extruder.Id})";
+
+                // Update extruder details
+                if (_extruderRootItem.Children.Count >= 4)
+                {
+                    _extruderRootItem.Children[0].Text = $"Current Temp: {_printer.Extruder.CurrentTemperature.Celsius:F1}°C";
+                    _extruderRootItem.Children[1].Text = $"Target Temp: {_printer.Extruder.TargetTemperature.Celsius:F1}°C";
+                    _extruderRootItem.Children[2].Text = $"Filament Temp: {_printer.Extruder.FilamentTemperature.Celsius:F1}°C";
+                    _extruderRootItem.Children[3].Text = $"Status: {_printer.Extruder.Status}";
+                }
+            }
+            else
+            {
+                _extruderRootItem.Text = "Extruder: Not detected";
+                // Clear children if no extruder data
+                if (_extruderRootItem.Children.Count >= 4)
+                {
+                    _extruderRootItem.Children[0].Text = "Current Temp: N/A";
+                    _extruderRootItem.Children[1].Text = "Target Temp: N/A";
+                    _extruderRootItem.Children[2].Text = "Filament Temp: N/A";
+                    _extruderRootItem.Children[3].Text = "Status: N/A";
+                }
+            }
         }
 
         // Update AMS data
@@ -225,13 +282,30 @@ public class PrinterStatusView : FrameView
 
                     if (!string.IsNullOrEmpty(tray.FilamentType))
                     {
-                        var trayText = $"Tray {tray.Id}: {tray.FilamentType}";
+                        // Add colored block if color is available
+                        var colorBlock = !string.IsNullOrEmpty(tray.Color)
+                            ? ColorConverter.GetColoredBlock(tray.Color)
+                            : "";
+
+                        // Get the terminal colors for this tray
+                        Color? terminalColor = null;
+                        Color? backgroundColor = null;
+
+                        if (!string.IsNullOrEmpty(tray.Color))
+                        {
+                            terminalColor = ColorConverter.HexToTerminalColor(tray.Color);
+                            backgroundColor = ColorConverter.GetContrastingBackgroundForHex(tray.Color);
+                        }
+
+                        var trayText = $"{colorBlock}Tray {tray.Id}: {tray.FilamentType}";
                         if (!string.IsNullOrEmpty(tray.Color))
                         {
                             trayText += $" ({tray.Color})";
                         }
                         trayText += $" - {tray.RemainingPercent}% remaining ({tray.RemainingLength}mm)";
                         trayItem.Text = trayText;
+                        trayItem.ForegroundColor = terminalColor;
+                        trayItem.BackgroundColor = backgroundColor;
 
                         // Update tray details
                         if (trayItem.Children.Count >= 2)
@@ -312,14 +386,18 @@ public class PrinterStatusView : FrameView
     {
         public string Text { get; set; }
         public List<StatusItem> Children { get; } = new();
+        public Color? ForegroundColor { get; set; }
+        public Color? BackgroundColor { get; set; }
 
         // ITreeNode implementation
         public object? Tag { get; set; }
         IList<ITreeNode> ITreeNode.Children => Children.Cast<ITreeNode>().ToList();
 
-        public StatusItem(string text)
+        public StatusItem(string text, Color? foregroundColor = null, Color? backgroundColor = null)
         {
             Text = text;
+            ForegroundColor = foregroundColor;
+            BackgroundColor = backgroundColor;
         }
 
         public override string ToString() => Text;
