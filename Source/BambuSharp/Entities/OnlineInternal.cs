@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains cloud connectivity status information.
 /// </summary>
-public class Online
+internal class OnlineInternal
 {
     /// <summary>
     /// Gets or sets a value indicating whether AHB (Bambu Lab cloud service) connectivity is active.

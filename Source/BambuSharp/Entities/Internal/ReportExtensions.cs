@@ -99,7 +99,7 @@ internal static class ReportExtensions
     /// </summary>
     /// <param name="network">The network configuration object.</param>
     /// <returns>A collection of network interfaces that have IP addresses configured.</returns>
-    public static IEnumerable<NetworkInfo> GetActiveInterfaces(this Network network)
+    public static IEnumerable<NetworkInfo> GetActiveInterfaces(this NetworkInternal network)
     {
         return network.Info.Where(i => i.IpAddress != null);
     }
@@ -109,7 +109,7 @@ internal static class ReportExtensions
     /// </summary>
     /// <param name="network">The network configuration object.</param>
     /// <returns>True if at least one network interface has an IP address; otherwise, false.</returns>
-    public static bool IsConnected(this Network network)
+    public static bool IsConnected(this NetworkInternal network)
     {
         return network.Info.Any(i => i.IpAddress != null);
     }

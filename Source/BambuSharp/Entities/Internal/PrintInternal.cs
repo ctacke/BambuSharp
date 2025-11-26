@@ -319,7 +319,7 @@ internal class PrintInternal
     /// Gets or sets the network connectivity information.
     /// </summary>
     [JsonPropertyName("net")]
-    public Network Net { get; set; } = new();
+    public NetworkInternal Net { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the nozzle diameter specification.
@@ -351,7 +351,7 @@ internal class PrintInternal
     /// Gets or sets the online status information.
     /// </summary>
     [JsonPropertyName("online")]
-    public Online Online { get; set; } = new();
+    public OnlineInternal Online { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the print job completion percentage.
@@ -543,7 +543,7 @@ internal class PrintInternal
     /// Gets or sets the file upload information.
     /// </summary>
     [JsonPropertyName("upload")]
-    public Upload Upload { get; set; } = new();
+    public UploadInternal Upload { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the firmware version string.
@@ -581,7 +581,7 @@ internal class PrintInternal
     /// Gets or sets the X camera information.
     /// </summary>
     [JsonPropertyName("xcam")]
-    public XCam XCam { get; set; } = new();
+    public XCamInternal XCam { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the X camera status.

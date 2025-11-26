@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains AI camera feature settings including failure detection and monitoring.
 /// </summary>
-public class XCam
+internal class XCamInternal
 {
     /// <summary>
     /// Gets or sets a value indicating whether to allow skipping parts during printing.

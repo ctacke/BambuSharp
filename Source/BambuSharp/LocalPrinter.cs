@@ -26,6 +26,8 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     private Nozzle? _nozzle;
     private IpCamera? _ipCamera;
     private IReadOnlyList<Light> _lights = Array.Empty<Light>();
+    private IReadOnlyList<NetworkInfo> _networks = Array.Empty<NetworkInfo>();
+    private AI? _ai;
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -164,6 +166,25 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets the list of network interfaces with their IP addresses and subnet masks.
+    /// </summary>
+    public IReadOnlyList<NetworkInfo> Networks
+    {
+        get => _networks;
+        private set => SetProperty(ref _networks, value);
+    }
+
+    /// <summary>
+    /// Gets the AI camera features and monitoring settings.
+    /// Returns null if no AI settings are available.
+    /// </summary>
+    public AI? AI
+    {
+        get => _ai;
+        private set => SetProperty(ref _ai, value);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
     /// </summary>
     /// <param name="ipAddress">The IP address of the printer on the local network.</param>
@@ -241,6 +262,19 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         Lights = report.Print.LightsReport
             .Select(light => new Light(light))
             .ToList();
+
+        // Update network interfaces
+        Networks = report.Print.Net.Info.ToList();
+
+        // Update AI settings
+        if (report.Print.XCam != null)
+        {
+            AI = new AI(report.Print.XCam);
+        }
+        else
+        {
+            AI = null;
+        }
     }
 
     protected virtual void Dispose(bool disposing)

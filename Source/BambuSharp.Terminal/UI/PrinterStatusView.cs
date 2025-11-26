@@ -18,6 +18,8 @@ public class PrinterStatusView : FrameView
     private StatusItem? _nozzleRootItem;
     private StatusItem? _cameraRootItem;
     private StatusItem? _lightsRootItem;
+    private StatusItem? _networksRootItem;
+    private StatusItem? _aiRootItem;
     private bool _treeInitialized = false;
 
     public PrinterStatusView()
@@ -193,6 +195,33 @@ public class PrinterStatusView : FrameView
             }
         }
 
+        // Create Networks root item
+        _networksRootItem = new StatusItem("Networks");
+        _rootItems.Add(_networksRootItem);
+
+        // Build network structure based on current printer state
+        if (_printer?.Networks != null)
+        {
+            foreach (var network in _printer.Networks)
+            {
+                var networkItem = new StatusItem(network.ToString());
+                _networksRootItem.Children.Add(networkItem);
+            }
+        }
+
+        // Create AI root item
+        _aiRootItem = new StatusItem("AI Features");
+        _rootItems.Add(_aiRootItem);
+
+        // Add AI feature details as children
+        _aiRootItem.Children.Add(new StatusItem("Printing Monitor: "));
+        _aiRootItem.Children.Add(new StatusItem("First Layer Inspector: "));
+        _aiRootItem.Children.Add(new StatusItem("Spaghetti Detector: "));
+        _aiRootItem.Children.Add(new StatusItem("Build Plate Marker: "));
+        _aiRootItem.Children.Add(new StatusItem("Print Halt: "));
+        _aiRootItem.Children.Add(new StatusItem("Halt Sensitivity: "));
+        _aiRootItem.Children.Add(new StatusItem("Allow Skip Parts: "));
+
         // Create AMS root item
         _amsRootItem = new StatusItem("AMS Units");
         _rootItems.Add(_amsRootItem);
@@ -253,8 +282,8 @@ public class PrinterStatusView : FrameView
             _rootItems[idx++].Text = "Remaining Time: N/A";
         }
 
-        // Skip extruder, nozzle, camera, and lights root items in main list (they're handled separately below)
-        idx += 4;
+        // Skip extruder, nozzle, camera, lights, networks, and AI root items in main list (they're handled separately below)
+        idx += 6;
 
         // Update Extruder data
         if (_extruderRootItem != null)
@@ -368,6 +397,73 @@ public class PrinterStatusView : FrameView
             {
                 _lightsRootItem.Text = "Lights: None";
                 _lightsRootItem.Children.Clear();
+            }
+        }
+
+        // Update Networks data
+        if (_networksRootItem != null)
+        {
+            if (_printer.Networks?.Count > 0)
+            {
+                _networksRootItem.Text = $"Networks ({_printer.Networks.Count})";
+
+                // Check if network structure changed (number of interfaces)
+                if (_printer.Networks.Count != _networksRootItem.Children.Count)
+                {
+                    // Rebuild tree if structure changed
+                    _treeInitialized = false;
+                    BuildTree();
+                    return;
+                }
+
+                // Update network data
+                for (int i = 0; i < _printer.Networks.Count && i < _networksRootItem.Children.Count; i++)
+                {
+                    var network = _printer.Networks[i];
+                    var networkItem = _networksRootItem.Children[i];
+                    networkItem.Text = network.ToString();
+                }
+            }
+            else
+            {
+                _networksRootItem.Text = "Networks: None";
+                _networksRootItem.Children.Clear();
+            }
+        }
+
+        // Update AI data
+        if (_aiRootItem != null)
+        {
+            if (_printer.AI != null)
+            {
+                _aiRootItem.Text = "AI Features";
+
+                // Update AI feature details
+                if (_aiRootItem.Children.Count >= 7)
+                {
+                    _aiRootItem.Children[0].Text = $"Printing Monitor: {(_printer.AI.PrintingMonitor ? "Enabled" : "Disabled")}";
+                    _aiRootItem.Children[1].Text = $"First Layer Inspector: {(_printer.AI.FirstLayerInspector ? "Enabled" : "Disabled")}";
+                    _aiRootItem.Children[2].Text = $"Spaghetti Detector: {(_printer.AI.SpaghettiDetector ? "Enabled" : "Disabled")}";
+                    _aiRootItem.Children[3].Text = $"Build Plate Marker: {(_printer.AI.BuildPlateMarkerDetector ? "Enabled" : "Disabled")}";
+                    _aiRootItem.Children[4].Text = $"Print Halt: {(_printer.AI.PrintHalt ? "Enabled" : "Disabled")}";
+                    _aiRootItem.Children[5].Text = $"Halt Sensitivity: {_printer.AI.HaltPrintSensitivity}";
+                    _aiRootItem.Children[6].Text = $"Allow Skip Parts: {(_printer.AI.AllowSkipParts ? "Yes" : "No")}";
+                }
+            }
+            else
+            {
+                _aiRootItem.Text = "AI Features: Not available";
+                // Clear children if no AI data
+                if (_aiRootItem.Children.Count >= 7)
+                {
+                    _aiRootItem.Children[0].Text = "Printing Monitor: N/A";
+                    _aiRootItem.Children[1].Text = "First Layer Inspector: N/A";
+                    _aiRootItem.Children[2].Text = "Spaghetti Detector: N/A";
+                    _aiRootItem.Children[3].Text = "Build Plate Marker: N/A";
+                    _aiRootItem.Children[4].Text = "Print Halt: N/A";
+                    _aiRootItem.Children[5].Text = "Halt Sensitivity: N/A";
+                    _aiRootItem.Children[6].Text = "Allow Skip Parts: N/A";
+                }
             }
         }
 

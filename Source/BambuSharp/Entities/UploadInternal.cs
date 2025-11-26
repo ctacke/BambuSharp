@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains file upload progress and status information.
 /// </summary>
-public class Upload
+internal class UploadInternal
 {
     /// <summary>
     /// Gets or sets the total file size in bytes.

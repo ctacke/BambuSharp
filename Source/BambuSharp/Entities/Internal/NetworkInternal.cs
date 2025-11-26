@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Contains network configuration and connection information.
 /// </summary>
-public class Network
+internal class NetworkInternal
 {
     /// <summary>
     /// Gets or sets the network configuration status or flag.

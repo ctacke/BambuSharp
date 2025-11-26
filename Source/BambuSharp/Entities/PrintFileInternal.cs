@@ -5,7 +5,7 @@ namespace BambuSharp;
 /// <summary>
 /// Represents a print file stored on the printer's SD card or internal storage.
 /// </summary>
-public class PrintFile
+internal class PrintFileInternal
 {
     /// <summary>
     /// Gets or sets the file name.
@@ -41,11 +41,11 @@ public class PrintFile
 /// <summary>
 /// Represents the response from a file list request.
 /// </summary>
-public class PrintFileListResponse
+internal class PrintFileListResponse
 {
     /// <summary>
     /// Gets or sets the list of print files.
     /// </summary>
     [JsonPropertyName("files")]
-    public List<PrintFile> Files { get; set; } = new();
+    public List<PrintFileInternal> Files { get; set; } = new();
 }
