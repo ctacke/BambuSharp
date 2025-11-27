@@ -92,7 +92,7 @@ public static class EnumHelpers
             1 => PrinterState.Prepare,
             2 => PrinterState.Running,
             3 => PrinterState.Paused,
-            4 => PrinterState.Finishing,
+            4 => PrinterState.Printing,
             6 => PrinterState.Finished,
             7 => PrinterState.Failed,
             _ => null

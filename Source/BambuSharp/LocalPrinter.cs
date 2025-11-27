@@ -28,6 +28,9 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     private IReadOnlyList<Light> _lights = Array.Empty<Light>();
     private IReadOnlyList<NetworkInfo> _networks = Array.Empty<NetworkInfo>();
     private AI? _ai;
+    private UploadStatus? _uploadStatus;
+    private IReadOnlyList<FileInfo> _files = Array.Empty<FileInfo>();
+    private CloudStatus? _cloudStatus;
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -185,6 +188,35 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets the current file upload status and progress.
+    /// Returns null if no upload is in progress or no upload data is available.
+    /// </summary>
+    public UploadStatus? UploadStatus
+    {
+        get => _uploadStatus;
+        private set => SetProperty(ref _uploadStatus, value);
+    }
+
+    /// <summary>
+    /// Gets the list of print files available on the printer's SD card or internal storage.
+    /// </summary>
+    public IReadOnlyList<FileInfo> Files
+    {
+        get => _files;
+        private set => SetProperty(ref _files, value);
+    }
+
+    /// <summary>
+    /// Gets the cloud connectivity status of the printer.
+    /// Returns null if no cloud status data is available.
+    /// </summary>
+    public CloudStatus? CloudStatus
+    {
+        get => _cloudStatus;
+        private set => SetProperty(ref _cloudStatus, value);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LocalPrinter"/> class.
     /// </summary>
     /// <param name="ipAddress">The IP address of the printer on the local network.</param>
@@ -274,6 +306,26 @@ public class LocalPrinter : IDisposable, INotifyPropertyChanged
         else
         {
             AI = null;
+        }
+
+        // Update upload status
+        if (report.Print.Upload != null)
+        {
+            UploadStatus = new UploadStatus(report.Print.Upload);
+        }
+        else
+        {
+            UploadStatus = null;
+        }
+
+        // Update cloud status
+        if (report.Print.Online != null)
+        {
+            CloudStatus = new CloudStatus(report.Print.Online);
+        }
+        else
+        {
+            CloudStatus = null;
         }
     }
 

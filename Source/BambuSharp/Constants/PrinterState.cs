@@ -32,7 +32,7 @@ public enum PrinterState
     /// <summary>
     /// Print job is completing/finishing.
     /// </summary>
-    Finishing = 4,
+    Printing = 4,
 
     /// <summary>
     /// Print has finished.

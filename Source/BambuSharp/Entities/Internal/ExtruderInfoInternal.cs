@@ -19,19 +19,22 @@ internal class ExtruderInfoInternal
     public List<object> FilamBak { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the current hot-end nozzle temperature in degrees Celsius.
+    /// Gets or sets the current hot-end nozzle temperature as a raw ADC value (Q16.16 fixed-point format).
+    /// Divide by 65536 to convert to degrees Celsius.
     /// </summary>
     [JsonPropertyName("hnow")]
     public int Hnow { get; set; }
 
     /// <summary>
-    /// Gets or sets the previous hot-end nozzle temperature in degrees Celsius.
+    /// Gets or sets the previous hot-end nozzle temperature as a raw ADC value (Q16.16 fixed-point format).
+    /// Divide by 65536 to convert to degrees Celsius.
     /// </summary>
     [JsonPropertyName("hpre")]
     public int Hpre { get; set; }
 
     /// <summary>
-    /// Gets or sets the target hot-end nozzle temperature in degrees Celsius.
+    /// Gets or sets the target hot-end nozzle temperature as a raw ADC value (Q16.16 fixed-point format).
+    /// Divide by 65536 to convert to degrees Celsius.
     /// </summary>
     [JsonPropertyName("htar")]
     public int Htar { get; set; }
@@ -73,7 +76,8 @@ internal class ExtruderInfoInternal
     public int Stat { get; set; }
 
     /// <summary>
-    /// Gets or sets the current filament temperature
+    /// Gets or sets the current filament temperature as a raw ADC value (Q16.16 fixed-point format).
+    /// The JSON value is a large integer that must be divided by 65536 to get degrees Celsius.
     /// </summary>
     [JsonPropertyName("temp")]
     [JsonConverter(typeof(TemperatureJsonConverter))]

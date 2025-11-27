@@ -20,6 +20,9 @@ public class PrinterStatusView : FrameView
     private StatusItem? _lightsRootItem;
     private StatusItem? _networksRootItem;
     private StatusItem? _aiRootItem;
+    private StatusItem? _uploadStatusRootItem;
+    private StatusItem? _filesRootItem;
+    private StatusItem? _cloudStatusRootItem;
     private bool _treeInitialized = false;
 
     public PrinterStatusView()
@@ -222,6 +225,42 @@ public class PrinterStatusView : FrameView
         _aiRootItem.Children.Add(new StatusItem("Halt Sensitivity: "));
         _aiRootItem.Children.Add(new StatusItem("Allow Skip Parts: "));
 
+        // Create Upload Status root item
+        _uploadStatusRootItem = new StatusItem("Upload Status");
+        _rootItems.Add(_uploadStatusRootItem);
+
+        // Add upload status details as children
+        _uploadStatusRootItem.Children.Add(new StatusItem("Status: "));
+        _uploadStatusRootItem.Children.Add(new StatusItem("Progress: "));
+        _uploadStatusRootItem.Children.Add(new StatusItem("Speed: "));
+        _uploadStatusRootItem.Children.Add(new StatusItem("File Size: "));
+        _uploadStatusRootItem.Children.Add(new StatusItem("Uploaded: "));
+        _uploadStatusRootItem.Children.Add(new StatusItem("Time Remaining: "));
+        _uploadStatusRootItem.Children.Add(new StatusItem("Message: "));
+
+        // Create Files root item
+        _filesRootItem = new StatusItem("Files");
+        _rootItems.Add(_filesRootItem);
+
+        // Build files structure based on current printer state
+        if (_printer?.Files != null)
+        {
+            foreach (var file in _printer.Files)
+            {
+                var fileItem = new StatusItem($"{file.Name} ({FormatBytes(file.Size)})");
+                _filesRootItem.Children.Add(fileItem);
+            }
+        }
+
+        // Create Cloud Status root item
+        _cloudStatusRootItem = new StatusItem("Cloud Status");
+        _rootItems.Add(_cloudStatusRootItem);
+
+        // Add cloud status details as children
+        _cloudStatusRootItem.Children.Add(new StatusItem("Bambu Lab Cloud: "));
+        _cloudStatusRootItem.Children.Add(new StatusItem("External Cloud: "));
+        _cloudStatusRootItem.Children.Add(new StatusItem("Protocol Version: "));
+
         // Create AMS root item
         _amsRootItem = new StatusItem("AMS Units");
         _rootItems.Add(_amsRootItem);
@@ -282,8 +321,8 @@ public class PrinterStatusView : FrameView
             _rootItems[idx++].Text = "Remaining Time: N/A";
         }
 
-        // Skip extruder, nozzle, camera, lights, networks, and AI root items in main list (they're handled separately below)
-        idx += 6;
+        // Skip extruder, nozzle, camera, lights, networks, AI, upload status, files, and cloud status root items in main list (they're handled separately below)
+        idx += 9;
 
         // Update Extruder data
         if (_extruderRootItem != null)
@@ -467,6 +506,143 @@ public class PrinterStatusView : FrameView
             }
         }
 
+        // Update Upload Status data
+        if (_uploadStatusRootItem != null)
+        {
+            if (_printer.UploadStatus != null)
+            {
+                _uploadStatusRootItem.Text = "Upload Status";
+
+                // Update upload status details
+                if (_uploadStatusRootItem.Children.Count >= 7)
+                {
+                    _uploadStatusRootItem.Children[0].Text = $"Status: {_printer.UploadStatus.Status}";
+                    _uploadStatusRootItem.Children[1].Text = $"Progress: {_printer.UploadStatus.Progress}%";
+
+                    // Format speed (bytes per second to MB/s or KB/s)
+                    string speedText;
+                    if (_printer.UploadStatus.Speed >= 1_000_000)
+                    {
+                        speedText = $"{_printer.UploadStatus.Speed / 1_000_000.0:F2} MB/s";
+                    }
+                    else if (_printer.UploadStatus.Speed >= 1_000)
+                    {
+                        speedText = $"{_printer.UploadStatus.Speed / 1_000.0:F2} KB/s";
+                    }
+                    else
+                    {
+                        speedText = $"{_printer.UploadStatus.Speed} B/s";
+                    }
+                    _uploadStatusRootItem.Children[2].Text = $"Speed: {speedText}";
+
+                    // Format file sizes
+                    string fileSizeText = FormatBytes(_printer.UploadStatus.FileSize);
+                    string uploadedText = FormatBytes(_printer.UploadStatus.FinishSize);
+
+                    _uploadStatusRootItem.Children[3].Text = $"File Size: {fileSizeText}";
+                    _uploadStatusRootItem.Children[4].Text = $"Uploaded: {uploadedText}";
+
+                    // Format time remaining
+                    if (_printer.UploadStatus.TimeRemaining > 0)
+                    {
+                        var timeRemaining = TimeSpan.FromSeconds(_printer.UploadStatus.TimeRemaining);
+                        if (timeRemaining.Hours > 0)
+                        {
+                            _uploadStatusRootItem.Children[5].Text = $"Time Remaining: {timeRemaining.Hours}h {timeRemaining.Minutes}m {timeRemaining.Seconds}s";
+                        }
+                        else if (timeRemaining.Minutes > 0)
+                        {
+                            _uploadStatusRootItem.Children[5].Text = $"Time Remaining: {timeRemaining.Minutes}m {timeRemaining.Seconds}s";
+                        }
+                        else
+                        {
+                            _uploadStatusRootItem.Children[5].Text = $"Time Remaining: {timeRemaining.Seconds}s";
+                        }
+                    }
+                    else
+                    {
+                        _uploadStatusRootItem.Children[5].Text = "Time Remaining: N/A";
+                    }
+
+                    _uploadStatusRootItem.Children[6].Text = $"Message: {(_printer.UploadStatus.Message != string.Empty ? _printer.UploadStatus.Message : "None")}";
+                }
+            }
+            else
+            {
+                _uploadStatusRootItem.Text = "Upload Status: No active upload";
+                // Clear children if no upload data
+                if (_uploadStatusRootItem.Children.Count >= 7)
+                {
+                    _uploadStatusRootItem.Children[0].Text = "Status: N/A";
+                    _uploadStatusRootItem.Children[1].Text = "Progress: N/A";
+                    _uploadStatusRootItem.Children[2].Text = "Speed: N/A";
+                    _uploadStatusRootItem.Children[3].Text = "File Size: N/A";
+                    _uploadStatusRootItem.Children[4].Text = "Uploaded: N/A";
+                    _uploadStatusRootItem.Children[5].Text = "Time Remaining: N/A";
+                    _uploadStatusRootItem.Children[6].Text = "Message: N/A";
+                }
+            }
+        }
+
+        // Update Files data
+        if (_filesRootItem != null)
+        {
+            if (_printer.Files?.Count > 0)
+            {
+                _filesRootItem.Text = $"Files ({_printer.Files.Count})";
+
+                // Check if file structure changed (number of files)
+                if (_printer.Files.Count != _filesRootItem.Children.Count)
+                {
+                    // Rebuild tree if structure changed
+                    _treeInitialized = false;
+                    BuildTree();
+                    return;
+                }
+
+                // Update file data
+                for (int i = 0; i < _printer.Files.Count && i < _filesRootItem.Children.Count; i++)
+                {
+                    var file = _printer.Files[i];
+                    var fileItem = _filesRootItem.Children[i];
+                    fileItem.Text = $"{file.Name} ({FormatBytes(file.Size)})";
+                }
+            }
+            else
+            {
+                _filesRootItem.Text = "Files: None";
+                _filesRootItem.Children.Clear();
+            }
+        }
+
+        // Update Cloud Status data
+        if (_cloudStatusRootItem != null)
+        {
+            if (_printer.CloudStatus != null)
+            {
+                _cloudStatusRootItem.Text = "Cloud Status";
+
+                // Update cloud status details
+                if (_cloudStatusRootItem.Children.Count >= 3)
+                {
+                    _cloudStatusRootItem.Children[0].Text = $"Bambu Lab Cloud: {(_printer.CloudStatus.BambuLabCloudConnected ? "Connected" : "Disconnected")}";
+                    _cloudStatusRootItem.Children[1].Text = $"External Cloud: {(_printer.CloudStatus.ExternalCloudConnected ? "Connected" : "Disconnected")}";
+                    _cloudStatusRootItem.Children[2].Text = $"Protocol Version: {_printer.CloudStatus.Version}";
+                }
+            }
+            else
+            {
+                _cloudStatusRootItem.Text = "Cloud Status: Not available";
+                // Clear children if no cloud status data
+                if (_cloudStatusRootItem.Children.Count >= 3)
+                {
+                    _cloudStatusRootItem.Children[0].Text = "Bambu Lab Cloud: N/A";
+                    _cloudStatusRootItem.Children[1].Text = "External Cloud: N/A";
+                    _cloudStatusRootItem.Children[2].Text = "Protocol Version: N/A";
+                }
+            }
+        }
+
         // Update AMS data
         if (_amsRootItem != null && _printer.AmsUnits?.Count > 0)
         {
@@ -575,6 +751,26 @@ public class PrinterStatusView : FrameView
         }
 
         return false;
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes >= 1_073_741_824) // 1 GB
+        {
+            return $"{bytes / 1_073_741_824.0:F2} GB";
+        }
+        else if (bytes >= 1_048_576) // 1 MB
+        {
+            return $"{bytes / 1_048_576.0:F2} MB";
+        }
+        else if (bytes >= 1_024) // 1 KB
+        {
+            return $"{bytes / 1_024.0:F2} KB";
+        }
+        else
+        {
+            return $"{bytes} B";
+        }
     }
 
     private class StatusItemTreeBuilder : ITreeBuilder<ITreeNode>

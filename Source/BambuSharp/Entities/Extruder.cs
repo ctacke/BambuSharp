@@ -38,9 +38,10 @@ public class Extruder
     internal Extruder(ExtruderInfoInternal info)
     {
         Id = info.Id;
-        CurrentTemperature = new Temperature(info.Hnow, Temperature.UnitType.Celsius);
-        TargetTemperature = new Temperature(info.Htar, Temperature.UnitType.Celsius);
-        FilamentTemperature = info.Temperature;
+        // Convert from Q16.16 fixed-point format (divide by 65536 to get Celsius)
+        CurrentTemperature = new Temperature(info.Hnow / 65536.0, Temperature.UnitType.Celsius);
+        TargetTemperature = new Temperature(info.Htar / 65536.0, Temperature.UnitType.Celsius);
+        FilamentTemperature = new Temperature(info.Temperature.Celsius / 65536.0, Temperature.UnitType.Celsius);
         Status = info.Stat;
     }
 }
