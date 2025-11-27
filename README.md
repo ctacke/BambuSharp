@@ -6,7 +6,7 @@ An open source .NET API for Bambu Lab printers.
 
 ## Overview
 
-BambuSharp is a comprehensive .NET library for communicating with Bambu Lab 3D printers over the local network. It provides real-time monitoring of printer status, temperatures, print progress, AMS (Automatic Material System) units, and much more through an easy-to-use API with full INotifyPropertyChanged support.
+BambuSharp is a comprehensive .NET library for communicating with Bambu Lab 3D printers over the local network. It provides real-time monitoring of printer status, temperatures, print progress, AMS (Automatic Material System) units, and much more through an easy-to-use API with full `INotifyPropertyChanged` support.
 
 ## Features
 
