@@ -39,5 +39,5 @@ internal class NozzleInfoInternal
     /// Gets or sets the nozzle wear level as a percentage (0-100), indicating remaining lifespan.
     /// </summary>
     [JsonPropertyName("wear")]
-    public int Wear { get; set; }
+    public double Wear { get; set; }
 }
